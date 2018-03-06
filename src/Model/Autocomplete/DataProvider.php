@@ -17,7 +17,8 @@ use Emico\Tweakwise\Model\Client\Response\AutocompleteResponse;
 use Emico\Tweakwise\Model\Config;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\CategoryRepository;
-use Magento\Catalog\Model\Layer\Category\CollectionFilter;
+use Magento\Catalog\Model\Layer\Search\CollectionFilter;
+use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -25,7 +26,6 @@ use Magento\Search\Model\Autocomplete\DataProviderInterface;
 use Magento\Search\Model\Autocomplete\ItemInterface;
 use Magento\Search\Model\Query;
 use Magento\Search\Model\QueryFactory;
-use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 
 class DataProvider implements DataProviderInterface
@@ -155,7 +155,7 @@ class DataProvider implements DataProviderInterface
         $productCollection = $this->productCollectionFactory->create();
         $productCollection->setStore($this->storeManager->getStore());
         $productCollection->addAttributeToFilter('entity_id', ['in' => $response->getProductIds()]);
-        $this->collectionFilter->filter($productCollection, $this->getCategory());
+        $this->applyCollectionFilter($productCollection);
 
         $result = [];
         foreach ($response->getProductIds() as $productId) {
@@ -168,6 +168,24 @@ class DataProvider implements DataProviderInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @param Collection $productCollection
+     */
+    protected function applyCollectionFilter(Collection $productCollection)
+    {
+        $query = $this->getQuery();
+
+        // Query text short value is temporarily set to true so that the Magento\CatalogSearch\Model\Layer\Search\Plugin\CollectionFilter::afterFilter()
+        // method will not call undefined method Magento\Catalog\Model\ResourceModel\Product\Collection::addSearchFilter().
+        $isQueryTextShortOldValue = $query->isQueryTextShort();
+        $query->setIsQueryTextShort(true);
+        try {
+            $this->collectionFilter->filter($productCollection, $this->getCategory());
+        } finally {
+            $query->setIsQueryTextShort($isQueryTextShortOldValue);
+        }
     }
 
     /**
@@ -184,13 +202,19 @@ class DataProvider implements DataProviderInterface
     }
 
     /**
+     * @return Query
+     */
+    protected function getQuery()
+    {
+        return $this->queryFactory->get();
+    }
+
+    /**
      * @return ItemInterface[]
      */
     public function getItems()
     {
-        /** @var Query $query */
-        $query = $this->queryFactory->get();
-        $query = $query->getQueryText();
+        $query = $this->getQuery()->getQueryText();
         $config = $this->config;
 
         /** @var AutocompleteRequest $request */
