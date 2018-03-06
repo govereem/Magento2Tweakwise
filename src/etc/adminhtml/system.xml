@@ -74,6 +74,14 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
+                <field id="filter_visibility" translate="label,comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Filter visibility</label>
+                    <comment><![CDATA[Only show products with visibility catalog or both. You also add the "visibility" attribute to the used TW filter template. (See Github issue <a href="https://github.com/EmicoEcommerce/Magento2Tweakwise/issues/40" target="_blank">#40</a>)]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
             </group>
             <group id="autocomplete" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Autocomplete</label>
@@ -122,6 +130,14 @@
                 <field id="template" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Tweakwise search template to use in search results</label>
                     <source_model>Emico\Tweakwise\Model\Config\Source\FilterTemplate</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="filter_visibility" translate="label,comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Filter visibility</label>
+                    <comment><![CDATA[Only show products with visibility search or both. You also add the "visibility" attribute to the used TW filter template. (See Github issue <a href="https://github.com/EmicoEcommerce/Magento2Tweakwise/issues/40" target="_blank">#40</a>)]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

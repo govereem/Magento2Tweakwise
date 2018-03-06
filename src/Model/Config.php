@@ -129,6 +129,15 @@ class Config
 
     /**
      * @param Store|null $store
+     * @return string
+     */
+    public function getLayeredFilterVisibility(Store $store = null)
+    {
+        return (bool) $this->getStoreConfig($store, 'tweakwise/layered/filter_visibility');
+    }
+
+    /**
+     * @param Store|null $store
      * @return bool
      */
     public function isAutocompleteEnabled(Store $store = null)
