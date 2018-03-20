@@ -129,7 +129,7 @@ class Config
 
     /**
      * @param Store|null $store
-     * @return string
+     * @return bool
      */
     public function getLayeredFilterVisibility(Store $store = null)
     {
@@ -192,6 +192,15 @@ class Config
     public function getSearchTemplateId(Store $store = null)
     {
         return (int) $this->getStoreConfig($store, 'tweakwise/search/template');
+    }
+
+    /**
+     * @param Store|null $store
+     * @return bool
+     */
+    public function getSearchFilterVisibility(Store $store = null)
+    {
+        return (bool) $this->getStoreConfig($store, 'tweakwise/search/filter_visibility');
     }
 
     /**
